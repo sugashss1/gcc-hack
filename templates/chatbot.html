@@ -2,6 +2,24 @@
 <html>
 <head>
   <link rel="stylesheet" href="/static/style.css">
+
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    #chatBox table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #chatBox th, #chatBox td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: left;
+    }
+    #chatBox th {
+      background: #f5f5f5;
+    }
+  </style>
 </head>
 <body>
 
@@ -10,7 +28,11 @@
 <div class="container">
   <div class="card">
     <h2>Chatbot</h2>
-    <div id="chatBox" style="height:300px; overflow-y:auto; border:1px solid #ddd; padding:10px;"></div>
+
+    <div id="chatBox"
+         style="height:300px; overflow-y:auto; border:1px solid #ddd; padding:10px;">
+    </div>
+
     <input id="chatInput" placeholder="Ask something..." style="width:80%">
     <button onclick="sendMessage()">Send</button>
   </div>
@@ -21,7 +43,8 @@ async function sendMessage() {
   const input = document.getElementById("chatInput");
   const box = document.getElementById("chatBox");
 
-  box.innerHTML += `<p><b>You:</b> ${input.value}</p>`;
+  // User message (plain text)
+  box.innerHTML += `<p><b>You:</b> ${escapeHtml(input.value)}</p>`;
 
   const res = await fetch("/api/chat", {
     method: "POST",
@@ -30,12 +53,23 @@ async function sendMessage() {
   });
 
   const data = await res.json();
-  box.innerHTML += `<p><b>Bot:</b> ${data.reply}</p>`;
+
+  // Convert Markdown → HTML
+  const botHtml = marked.parse(data.reply);
+
+  box.innerHTML += `<div><b>Bot:</b>${botHtml}</div>`;
+  box.scrollTop = box.scrollHeight;
 
   input.value = "";
 }
-</script>
 
+// Prevent XSS from user input
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.innerText = text;
+  return div.innerHTML;
+}
+</script>
 
 </body>
 </html>

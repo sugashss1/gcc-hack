@@ -1,12 +1,13 @@
 from flask import Blueprint, request, jsonify, session
 from firestore import (
-    get_tasks_for_tenant,
     create_task,
     update_task,
     delete_task,
 )
 from datetime import datetime
 from auth import login_required,no_user_required
+from google.cloud import firestore
+db = firestore.Client(project="multi-tanant")
 
 tasks_api = Blueprint("tasks_api", __name__)
 
@@ -18,7 +19,7 @@ def get_tasks():
 
     role = session.get("role")
     tenant_id = session.get("tenant_id")
-    company_name = session.get("company_name")
+    company_name = session.get("company")
     user_email = session.get("email")
 
     # CEO: all tasks for the company
@@ -29,7 +30,6 @@ def get_tasks():
             .order_by("created_at")
             .stream()
         )
-
     # Manager: tasks assigned to the manager
     elif role == "manager":
         tasks = (

@@ -44,7 +44,7 @@ def list_projects():
 
     role = session.get("role")
     tenant_id = session.get("tenant_id")
-    company_name = session.get("company_name")  # must be set at login
+    company_name = session.get("company")  # must be set at login
 
     # CEO: all projects for the company
     if role == "ceo":

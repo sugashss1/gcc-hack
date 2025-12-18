@@ -1,6 +1,6 @@
 from google.cloud import firestore
 from datetime import datetime
-
+from google.cloud import firestore
 db = firestore.Client(project="multi-tanant")
 
 def get_user_by_email(email):
@@ -44,7 +44,7 @@ def get_manager_id_by_email(manager_email: str):
         return None
     return user_doc.id 
 
-def get_tasks_for_tenant(tenant_id):
+def get_tasks_for_tenant(tenant_id):#do not use it
     return (
         db.collection("tasks")
         .where("tenant_id", "==", tenant_id)
