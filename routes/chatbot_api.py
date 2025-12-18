@@ -76,4 +76,16 @@ Respond accurately using the above context. Do not repeat metadata unless asked.
     session["chat_history"] = chat_history[-20:]
     session.modified = True
 
-    return jsonify({"reply": reply})
+    
+    return jsonify({
+        "reply": reply,
+        "history": session["chat_history"]
+    })
+
+@chatbot_api.route("/api/chat/history", methods=["GET"])
+@login_required
+def chat_history():
+    return jsonify({
+        "history": session.get("chat_history", [])
+    })
+
