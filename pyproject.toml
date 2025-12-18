@@ -1,0 +1,10 @@
+[project]
+name = "multi-tenant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.2",
+    "google-cloud-firestore>=2.21.0",
+]
