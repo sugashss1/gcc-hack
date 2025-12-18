@@ -82,6 +82,7 @@ def admin_create_user():
 def dashboard():
     return render_template(
         "dashboard.html",
+        name=session.get("name"),
         email=session.get("user"),
         role=session.get("role"),
         tenant_id=session.get("tenant_id"),

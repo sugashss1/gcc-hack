@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,session
 from llm import generate_text
 from auth import login_required
 from routes.tasks_api import get_tasks
@@ -11,10 +11,14 @@ chatbot_api = Blueprint("chatbot_api", __name__)
 def chat():
     user_prompt = request.json["message"]
 
-    # Call existing get_tasks() endpoint logic
-    tasks_response = get_tasks()
+    # Initialize chat history (session-scoped)
+    if "chat_history" not in session:
+        session["chat_history"] = []
 
-    # get_tasks() returns a Flask Response, extract JSON
+    chat_history = session["chat_history"]
+
+    # Fetch tasks using existing logic
+    tasks_response = get_tasks()
     tasks = tasks_response.get_json()
 
     # Build task context
@@ -26,18 +30,50 @@ def chat():
         for t in tasks
     ])
 
-    # Final prompt with explicit delimiter
+    # Build chat history context
+    history_context = "\n".join([
+        f"{m['role'].upper()}: {m['content']}"
+        for m in chat_history
+    ])
+
+    # Build user/session context
+    user_context = f"""
+User Email   : {session.get("email")}
+User Role    : {session.get("role")}
+Tenant ID    : {session.get("tenant_id")}
+Company      : {session.get("company")}
+"""
+
+    # Final prompt with strict separation
     final_prompt = f"""
+USER CONTEXT (read-only):
+--------------------
+{user_context}
+--------------------
+
 TASK CONTEXT:
 --------------------
 {task_context}
 --------------------
 
+CHAT HISTORY:
+--------------------
+{history_context}
+--------------------
+
 USER PROMPT:
 <<<{user_prompt}>>>
 
-Answer the user prompt using the task context when applicable.
+Respond accurately using the above context. Do not repeat metadata unless asked.
 """
 
-    response = generate_text(final_prompt)
-    return jsonify({"reply": response})
+    # Generate AI response
+    reply = generate_text(final_prompt)
+
+    # Persist chat history (last 10 turns)
+    chat_history.append({"role": "user", "content": user_prompt})
+    chat_history.append({"role": "assistant", "content": reply})
+    session["chat_history"] = chat_history[-20:]
+    session.modified = True
+
+    return jsonify({"reply": reply})
