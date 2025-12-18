@@ -23,3 +23,12 @@ def admin_required(f):
             return "Forbidden", 403
         return f(*args, **kwargs)
     return wrapper
+
+def no_user_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if session.get("role") == "user":
+            return "Forbidden", 403
+        return f(*args, **kwargs)
+    return wrapper
+

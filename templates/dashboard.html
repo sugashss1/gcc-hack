@@ -2,30 +2,8 @@
 <html>
 <head>
   <title>Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8fafc;
-      padding: 40px;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      max-width: 500px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .admin {
-      margin-top: 20px;
-      padding: 10px;
-      background: #eef2ff;
-      border-radius: 6px;
-    }
-    a {
-      display: inline-block;
-      margin-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/style.css">
+
 </head>
 
 <body>
@@ -37,7 +15,7 @@
     <p><strong>Role:</strong> {{ role }}</p>
     <p><strong>Tenant:</strong> {{ tenant_id }}</p>
 
-    {% if role == "admin" %}
+    {% if role != "user" %}
       <div class="admin">
         <h4>Admin Actions</h4>
         <a href="/admin/users/create">➕ Create User</a>

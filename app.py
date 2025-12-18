@@ -1,17 +1,20 @@
 import os
 from flask import Flask, render_template, request, redirect, session
 import firebase
-from firestore import get_user_by_email, create_user
-from auth import hash_password, verify_password, login_required, admin_required
+from firestore import get_user_by_email, create_user, get_next_tenant_id
+from auth import hash_password, verify_password, login_required, admin_required,no_user_required
 from datetime import datetime
 from routes.tasks_api import tasks_api
 from routes.chatbot_api import chatbot_api
+from routes.projects_api import projects_api
 
 app = Flask(__name__)
 app.register_blueprint(tasks_api)
 app.register_blueprint(chatbot_api)
+app.register_blueprint(projects_api)
 
-app.secret_key = "asd2"  # use env var on Cloud Run
+
+app.secret_key = "asd2"  
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -32,6 +35,7 @@ def login():
         session["role"] = user["role"]
         session["tenant_id"] = user["tenant_id"]
         session["email"]=user["email"]
+        session["company"]=user["company"]
 
         return redirect("/dashboard")
 
@@ -40,21 +44,36 @@ def login():
 
 @app.route("/admin/users/create", methods=["GET", "POST"])
 @login_required
-@admin_required
+@no_user_required
 def admin_create_user():
     if request.method == "POST":
+        manager_email = session.get("email")
+        company = request.form.get("company")
+        
+        if company==None:
+            company=session.get("company")
+
+        manager_id = None
+        if manager_email and manager_email!="admin@example.com":
+            manager_id = get_manager_id_by_email(manager_email)
+        
+        tenant_id=get_next_tenant_id()
+
         create_user(
             {
+                "full_name": request.form["full_name"],
                 "email": request.form["email"],
                 "password_hash": hash_password(request.form["password"]),
                 "role": request.form["role"],
-                "tenant_id": request.form["tenant_id"],
+                "tenant_id": tenant_id,
+                "manager_id": manager_id,
+                "company" : company,
                 "created_at": datetime.utcnow(),
             }
         )
         return redirect("/dashboard")
 
-    return render_template("admin_create_user.html")
+    return render_template("admin_create_user.html",role=session.get("role"))
 
 
 @app.route("/dashboard")
