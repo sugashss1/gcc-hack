@@ -79,6 +79,7 @@ def delete_task(task_id):
 def create_project(data):
     db.collection("projects").add({
         "project_name": data["project_name"],
+        "description": data["description"],
         "company_name": data["company_name"],
         "start_date": data["start_date"],
         "due_date": data["due_date"],

@@ -36,6 +36,7 @@ def login():
         session["tenant_id"] = user["tenant_id"]
         session["email"]=user["email"]
         session["company"]=user["company"]
+        session["manager_id"]=user["manager_id"]
 
         return redirect("/dashboard")
 
@@ -101,6 +102,8 @@ def tasks():
 @login_required
 def chatbot():
     return render_template("chatbot.html")
+
+
 
 
 

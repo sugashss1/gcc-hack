@@ -1,3 +1,4 @@
 .env
 multi-tanant-firebase.json
 __pycache__
+test.py

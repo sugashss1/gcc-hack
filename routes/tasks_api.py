@@ -5,6 +5,7 @@ from firestore import (
     update_task,
     delete_task,
 )
+from datetime import datetime
 from auth import login_required,no_user_required
 
 tasks_api = Blueprint("tasks_api", __name__)
@@ -12,14 +13,49 @@ tasks_api = Blueprint("tasks_api", __name__)
 @tasks_api.route("/api/tasks", methods=["GET"])
 @login_required
 def get_tasks():
-    tenant_id = session.get("tenant_id")
+    if "tenant_id" not in session:
+        return {"error": "unauthorized"}, 401
 
-    tasks = get_tasks_for_tenant(tenant_id)
+    role = session.get("role")
+    tenant_id = session.get("tenant_id")
+    company_name = session.get("company_name")
+    user_email = session.get("email")
+
+    # CEO: all tasks for the company
+    if role == "ceo":
+        tasks = (
+            db.collection("tasks")
+            .where("company", "==", company_name)
+            .order_by("created_at")
+            .stream()
+        )
+
+    # Manager: tasks assigned to the manager
+    elif role == "manager":
+        tasks = (
+            db.collection("tasks")
+            .where("tenant_id", "==", tenant_id)
+            .order_by("created_at")
+            .stream()
+        )
+
+    # Employee: tasks assigned to the employee
+    else:
+        tasks = (
+            db.collection("tasks")
+            .where("assigned_to", "==", user_email)
+            .order_by("created_at")
+            .stream()
+        )
 
     return jsonify([
-        {**doc.to_dict(), "id": doc.id}
+        {
+            "id": doc.id,
+            **doc.to_dict()
+        }
         for doc in tasks
     ])
+
 
 
 
