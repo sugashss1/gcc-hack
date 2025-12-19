@@ -3,7 +3,8 @@ from firestore import (
     get_manager_id_by_email,
     get_projects_for_tenant,
     update_project,
-    delete_project
+    delete_project,
+    create_project
 )
 from auth import login_required,no_user_required
 from datetime import datetime
@@ -21,6 +22,10 @@ def add_project():
         return {"error": "unauthorized"}, 401
 
     data = request.json
+    if session.get("role")=="ceo":
+        manager_id=data["manager_id"]
+    else:
+        manager_id=session.get("tenant_id")
 
     create_project({
         "project_name": data["project_name"],
@@ -28,7 +33,7 @@ def add_project():
         "company_name": session.get("company"),      # ✅ from user
         "start_date": datetime.fromisoformat(data["start_date"]),
         "due_date": datetime.fromisoformat(data["due_date"]),
-        "manager_id": session.get("tenant_id"),                       # CEO owns project
+        "manager_id": int(manager_id),                       # CEO owns project
         "created_by": session.get("email"),           # ✅ audit
     })
 
@@ -88,6 +93,7 @@ def list_projects():
 
 @projects_api.route("/api/projects/<project_id>", methods=["PUT"])
 @login_required
+@no_user_required
 def edit_project(project_id):
     update_project(project_id, request.json)
     return {"status": "ok"}
@@ -95,6 +101,7 @@ def edit_project(project_id):
 
 @projects_api.route("/api/projects/<project_id>", methods=["DELETE"])
 @login_required
+@no_user_required
 def remove_project(project_id):
     delete_project(project_id)
     return {"status": "ok"}

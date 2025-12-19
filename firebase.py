@@ -1,9 +1,10 @@
+import os
 import firebase_admin
 from firebase_admin import credentials
-from dotenv import load_dotenv
-
-load_dotenv()
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("multi-tanant-firebase.json")
-    firebase_admin.initialize_app(cred)
+    if os.getenv("K_SERVICE"):  # Running on Cloud Run
+        firebase_admin.initialize_app()
+    else:  # Local development
+        cred = credentials.Certificate("multi-tanant-firebase.json")
+        firebase_admin.initialize_app(cred)

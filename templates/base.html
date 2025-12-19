@@ -20,6 +20,12 @@
          class="nav-item {% if request.path == '/dashboard' %}active{% endif %}">
         Dashboard
       </a>
+    {% if session.get('role') != 'user' %}
+      <a href="/projects"
+        class="nav-item {% if request.path == '/projects' %}active{% endif %}">
+        Projects
+      </a>
+    {% endif %}
 
       <a href="/tasks"
          class="nav-item {% if request.path == '/tasks' %}active{% endif %}">

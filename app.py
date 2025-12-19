@@ -101,14 +101,18 @@ def logout():
 def tasks():
     return render_template("tasks.html",role=session.get("role"))
 
-@app.route("/chatbot")
+@app.route("/projects")
 @login_required
-def chatbot():
-    return render_template("chatbot.html")
+@no_user_required
+def projects():
+    return render_template("projects.html",role=session.get("role"))
+
+
 
 
 
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(debug=True,host="0.0.0.0", port=port)

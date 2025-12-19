@@ -109,5 +109,21 @@ def get_user_by_manager_id():
         for doc in users
     ])
 
+@tasks_api.route("/api/all-user", methods=["GET"])
+@login_required
+@no_user_required
+def get_all_user():
+    id=session.get("db_id")
+
+    users = db.collection('users').get()
+
+    return jsonify([
+        {
+            "id": doc.id,
+            **doc.to_dict()
+        }
+        for doc in users
+    ])
+
 
 
