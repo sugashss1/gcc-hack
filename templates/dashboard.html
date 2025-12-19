@@ -270,7 +270,7 @@ async function renderTaskStatusChart() {
   const tasks = await res.json();
 
   // Count tasks by status
-  const statusCounts = { "TODO": 0, "IN PROGRESS": 0, "DONE": 0 };
+  const statusCounts = { "TODO": 0, "IN_PROGRESS": 0, "DONE": 0 };
   tasks.forEach(task => {
     const status = (task.status || "TODO").toUpperCase();
     if (statusCounts[status] !== undefined) {
@@ -284,7 +284,7 @@ async function renderTaskStatusChart() {
     data: {
       labels: ["TODO", "IN PROGRESS", "DONE"],
       datasets: [{
-        data: [statusCounts["TODO"], statusCounts["IN PROGRESS"], statusCounts["DONE"]],
+        data: [statusCounts["TODO"], statusCounts["IN_PROGRESS"], statusCounts["DONE"]],
         backgroundColor: ["#f39c12", "#3498db", "#2ecc71"]
       }]
     },
