@@ -38,6 +38,7 @@ def login():
         session["company"]=user["company"]
         session["manager_id"]=user["manager_id"]
         session["name"]=user["full_name"]
+        session["db_id"]=doc.id
 
         return redirect("/dashboard")
 
@@ -98,7 +99,7 @@ def logout():
 @app.route("/tasks")
 @login_required
 def tasks():
-    return render_template("tasks.html")
+    return render_template("tasks.html",role=session.get("role"))
 
 @app.route("/chatbot")
 @login_required

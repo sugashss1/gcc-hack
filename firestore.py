@@ -54,7 +54,6 @@ def get_tasks_for_tenant(tenant_id):#do not use it
 
 def create_task(data):
     db.collection("tasks").add({
-        "task_type": data["task_type"],          # PROJECT / GOAL
         "project_name": data.get("project_name"),
         "company":data.get("company"),
         "title": data["title"],

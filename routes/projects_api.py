@@ -57,7 +57,7 @@ def list_projects():
 
     # Manager: only projects managed by them
     elif role == "manager":
-        manager_id = session.get("user_id")  # numeric manager_id
+        manager_id = session.get("tenant_id")  # numeric manager_id
         projects = (
             db.collection("projects")
             .where("manager_id", "==", manager_id)

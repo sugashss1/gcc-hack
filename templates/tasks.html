@@ -1,122 +1,94 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Tasks</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
 
-{% include "_navbar.html" %}
+{% block title %}Kanban Board{% endblock %}
+
+{% block content %}
 
 <div class="container">
+  <h1>Kanban Board</h1>
+  <p>Drag and drop tasks to update their status</p>
 
-  <!-- Add Task -->
-  <div class="card">
-    <h2>Add Task</h2>
 
-    <input id="title" placeholder="Task title">
-    <input id="project_name" placeholder="Project name (optional)">
-    <input id="assigned_to" placeholder="Assign to (email)">
-    
-    <select id="task_type">
-      <option value="PROJECT">PROJECT</option>
-      <option value="GOAL">GOAL</option>
-    </select>
 
-    <input id="start_date" type="date">
-    <input id="due_date" type="date">
+  <!-- KANBAN BOARD -->
+  <div class="kanban">
+    <div class="column">
+      <h3>TODO</h3>
+      <div id="todo" class="task-column"></div>
+    </div>
 
-    <textarea id="description" placeholder="Description"></textarea>
+    <div class="column">
+      <h3>IN PROGRESS</h3>
+      <div id="in_progress" class="task-column"></div>
+    </div>
 
-    <button onclick="addTask()">Add Task</button>
+    <div class="column">
+      <h3>DONE</h3>
+      <div id="done" class="task-column"></div>
+    </div>
   </div>
-
-  <!-- Task List -->
-  <div class="card">
-    <h2>Tasks</h2>
-    <ul id="taskList"></ul>
-  </div>
-
 </div>
 
 <script>
+
+/* -------------------------------
+   LOAD & RENDER TASKS
+-------------------------------- */
 async function loadTasks() {
   const res = await fetch("/api/tasks");
   const tasks = await res.json();
   render(tasks);
 }
 
-async function addTask() {
-  const payload = {
-    title: document.getElementById("title").value,
-    project_name: document.getElementById("project_name").value || null,
-    assigned_to: document.getElementById("assigned_to").value,
-    task_type: document.getElementById("task_type").value,
-    start_date: document.getElementById("start_date").value,
-    due_date: document.getElementById("due_date").value,
-    description: document.getElementById("description").value
-  };
-
-  await fetch("/api/tasks", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(payload)
+function render(tasks) {
+  ["todo", "in_progress", "done"].forEach(id => {
+    document.getElementById(id).innerHTML = "";
   });
 
-  clearForm();
-  loadTasks();
+  tasks.forEach(task => {
+    const el = document.createElement("div");
+    el.className = "task";
+    el.draggable = true;
+
+    el.ondragstart = e => {
+      e.dataTransfer.setData("id", task.id);
+    };
+
+    el.innerHTML = `
+      <strong>${task.title}</strong>
+      <div>
+        <small>${task.project_name || "-"}</small><br>
+        <small>${task.assigned_to}</small>
+      </div>
+    `;
+
+    const columnId = (task.status || "TODO").toLowerCase();
+    const column = document.getElementById(columnId);
+    if (column) column.appendChild(el);
+  });
 }
 
+/* -------------------------------
+   UPDATE STATUS (DRAG & DROP)
+-------------------------------- */
 async function updateStatus(id, status) {
-  const newStatus = status === "DONE" ? "TODO" : "DONE";
-
   await fetch(`/api/tasks/${id}`, {
     method: "PUT",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ status: newStatus })
-  });
-
-  loadTasks();
-}
-
-async function deleteTask(id) {
-  await fetch(`/api/tasks/${id}`, { method: "DELETE" });
-  loadTasks();
-}
-
-function render(tasks) {
-  const list = document.getElementById("taskList");
-  list.innerHTML = "";
-
-  tasks.forEach(t => {
-    list.innerHTML += `
-      <li class="task-item">
-        <strong>${t.title}</strong>
-        <div class="meta">
-          <span>Project: ${t.project_name || "-"}</span>
-          <span>Assigned to: ${t.assigned_to}</span>
-          <span>Due: ${new Date(t.due_date).toLocaleDateString()}</span>
-          <span>Status: ${t.status}</span>
-        </div>
-
-        <button onclick="updateStatus('${t.id}', '${t.status}')">
-          ${t.status === "DONE" ? "Mark TODO" : "Mark DONE"}
-        </button>
-
-        <button onclick="deleteTask('${t.id}')">Delete</button>
-      </li>
-    `;
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
   });
 }
 
-function clearForm() {
-  ["title", "project_name", "assigned_to", "description"].forEach(
-    id => document.getElementById(id).value = ""
-  );
-}
+document.querySelectorAll(".task-column").forEach(col => {
+  col.ondragover = e => e.preventDefault();
+  col.ondrop = async e => {
+    const id = e.dataTransfer.getData("id");
+    await updateStatus(id, col.id.toUpperCase());
+    loadTasks();
+  };
+});
 
 loadTasks();
 </script>
 
-</body>
-</html>
+{% endblock %}

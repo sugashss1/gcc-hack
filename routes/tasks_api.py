@@ -66,7 +66,6 @@ def add_task():
     data = request.json
 
     create_task({
-        "task_type": data["task_type"],               # PROJECT / GOAL
         "project_name": data.get("project_name"),
         "company":session.get("company"),                                    # optional
         "title": data["title"],
@@ -83,7 +82,6 @@ def add_task():
 
 @tasks_api.route("/api/tasks/<task_id>", methods=["PUT"])
 @login_required
-@no_user_required
 def edit_task(task_id):
     update_task(task_id, request.json)
     return {"status": "ok"}
@@ -94,3 +92,22 @@ def edit_task(task_id):
 def remove_task(task_id):
     delete_task(task_id)
     return {"status": "ok"}
+
+
+@tasks_api.route("/api/user-by-manager-id", methods=["GET"])
+@login_required
+def get_user_by_manager_id():
+    id=session.get("db_id")
+
+    users = db.collection('users').where("manager_id", "==", id).get()
+
+    return jsonify([
+        {
+            "id": doc.id,
+            **doc.to_dict()
+        }
+        for doc in users
+    ])
+
+
+

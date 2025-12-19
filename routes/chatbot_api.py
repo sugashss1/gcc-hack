@@ -56,10 +56,6 @@ TASK CONTEXT:
 {task_context}
 --------------------
 
-CHAT HISTORY:
---------------------
-{history_context}
---------------------
 
 USER PROMPT:
 <<<{user_prompt}>>>
