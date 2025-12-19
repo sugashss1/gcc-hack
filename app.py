@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, session
 import firebase
-from firestore import get_user_by_email, create_user, get_next_tenant_id
+from firestore import get_user_by_email, create_user, get_next_tenant_id,get_manager_id_by_email
 from auth import hash_password, verify_password, login_required, admin_required,no_user_required
 from datetime import datetime
 from routes.tasks_api import tasks_api
@@ -37,6 +37,7 @@ def login():
         session["email"]=user["email"]
         session["company"]=user["company"]
         session["manager_id"]=user["manager_id"]
+        session["name"]=user["full_name"]
 
         return redirect("/dashboard")
 
