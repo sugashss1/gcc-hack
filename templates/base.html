@@ -163,8 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") sendMessage();
   });
 
-  // Load initial history
+  // Load initial history (but don't auto-open the panel)
   loadChatHistory();
+  // Keep panel closed by default
+  panel.style.display = "none";
 });
 </script>
 

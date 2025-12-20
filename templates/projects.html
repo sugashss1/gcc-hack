@@ -3,166 +3,182 @@
 {% block title %}Projects{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1>Projects</h1>
+<div style="max-width: 1400px; margin: 0 auto;">
+  <h1 style="color: #2c3e50; margin-bottom: 10px; font-size: 32px; font-weight: 700;">📊 Projects</h1>
+  <p style="color: #7f8c8d; margin-bottom: 30px; font-size: 14px;">Total projects: <span id="projectCount" style="font-weight: 700; color: #3498db;">0</span></p>
   <div id="projects-container" class="projects-grid"></div>
 </div>
 
-<!-- =========================
-     Edit Project Modal
-========================= -->
-<div id="editProjectModal" class="modal" style="display:none;">
-  <div class="modal-content" style="max-width:400px; margin:auto; padding:20px; border:1px solid #ccc; border-radius:8px; background:#fff; position:relative;">
-    <span id="closeModal" style="position:absolute; top:10px; right:15px; cursor:pointer;">&times;</span>
-    <h3>Edit Project</h3>
+<!-- Edit Project Modal -->
+<div id="editProjectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+  <div class="modal-content" style="max-width:450px; padding:30px; border-radius:10px; background:#fff; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3 style="margin:0; color:#2c3e50; font-size:20px;">✏️ Edit Project</h3>
+      <span id="closeModal" style="cursor:pointer; font-size:24px; color:#95a5a6;">&times;</span>
+    </div>
     <form id="editProjectForm">
       <input type="hidden" id="editProjectId">
-      <label>Project Name:</label><br>
-      <input type="text" id="editProjectName" required style="width:100%; margin-bottom:10px;"><br>
-      <label>Description:</label><br>
-      <textarea id="editProjectDescription" style="width:100%; margin-bottom:10px;"></textarea><br>
-      <label>Start Date:</label><br>
-      <input type="date" id="editStartDate" style="width:100%; margin-bottom:10px;"><br>
-      <label>Due Date:</label><br>
-      <input type="date" id="editDueDate" style="width:100%; margin-bottom:10px;"><br>
-      <button type="submit">Save Changes</button>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:6px; color:#34495e; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Project Name</label>
+        <input type="text" id="editProjectName" required style="width:100%; padding:10px 12px; border:2px solid #e8eef5; border-radius:8px; font-size:14px; transition:all 0.3s ease;">
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:6px; color:#34495e; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Description</label>
+        <textarea id="editProjectDescription" style="width:100%; padding:10px 12px; border:2px solid #e8eef5; border-radius:8px; font-size:14px; min-height:100px; resize:vertical; transition:all 0.3s ease;"></textarea>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:6px; color:#34495e; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Start Date</label>
+        <input type="date" id="editStartDate" style="width:100%; padding:10px 12px; border:2px solid #e8eef5; border-radius:8px; font-size:14px; transition:all 0.3s ease;">
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; margin-bottom:6px; color:#34495e; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">Due Date</label>
+        <input type="date" id="editDueDate" style="width:100%; padding:10px 12px; border:2px solid #e8eef5; border-radius:8px; font-size:14px; transition:all 0.3s ease;">
+      </div>
+
+      <button type="submit" style="width:100%; padding:12px; background:#3498db; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.3s ease;">Save Changes</button>
     </form>
   </div>
 </div>
 
 <style>
 .projects-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.project-tooltip {
-  position: relative;
-  display: inline-block;
-}
-
-.project-tooltip .tooltiptext {
-  visibility: hidden;
-  width: 250px;
-  background-color: #333;
-  color: #fff;
-  text-align: left;
-  padding: 8px 10px;
-  border-radius: 5px;
-  position: absolute;
-  z-index: 10;
-  bottom: 100%;          /* place above the card */
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  pointer-events: none;
-}
-
-.project-tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%) translateY(-12px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
 }
 
 .project-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 15px;
-  width: 300px;
-  position: relative;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
   background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-top: 4px solid #3498db;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
 }
 
 .project-card h3 {
-  margin: 0 0 5px;
+  margin: 0 0 10px;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 18px;
 }
 
 .project-card small {
   display: block;
-  color: #555;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+  line-height: 1.6;
 }
 
 .project-card button {
-  margin-top: 5px;
-  padding: 5px 10px;
+  padding: 8px 12px;
   font-size: 12px;
   cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  margin-top: 5px;
+  margin-right: 5px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.tasks-list {
-  margin-top: 10px;
-  padding-left: 15px;
+.btn-edit {
+  background: #3498db;
+  color: white;
 }
 
-.task-item {
-  font-size: 13px;
-  margin-bottom: 3px;
+.btn-edit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
 
-/* Modal styling */
-.modal {
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-delete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
-
 <script>
-// Inject current user role
 const role = "{{ session.get('role') }}";
 
 async function loadProjects() {
+  console.log("Loading projects for role:", role);
   const res = await fetch("/api/projects");
   const projects = await res.json();
+  console.log("Loaded", projects.length, "projects:", projects);
+  document.getElementById("projectCount").textContent = projects.length;
 
   const container = document.getElementById("projects-container");
   container.innerHTML = "";
 
   for (const project of projects) {
-    const cardWrapper = document.createElement("div");
-    cardWrapper.className = "project-tooltip";
+    const card = document.createElement("div");
+    card.className = "project-card";
 
-    cardWrapper.innerHTML = `
-      <div class="project-card">
-        <h3>${project.project_name}</h3>
-        <small><strong>Company:</strong> ${project.company_name || "-"}</small>
-        <small><strong>Start:</strong> ${project.start_date ? new Date(project.start_date).toLocaleDateString("en-GB") : "-"}</small>
-        <small><strong>Due:</strong> ${project.due_date ? new Date(project.due_date).toLocaleDateString("en-GB") : "-"}</small>
-        <small><strong>Manager ID:</strong> ${project.manager_id || "-"}</small>
-        <div class="tasks-list" id="tasks-${project.id}"><em>Loading tasks...</em></div>
-      </div>
-      <span class="tooltiptext">${project.description || "No description"}</span>
+    const statusColor = project.is_completed ? "#2ecc71" : "#f39c12";
+    const statusText = project.is_completed ? "✅ Completed" : "📋 Active";
+
+    card.innerHTML = `
+      <h3>${project.project_name}</h3>
+      <small><strong>📁 Company:</strong> ${project.company_name || "-"}</small>
+      <small><strong>📅 Start:</strong> ${project.start_date ? new Date(project.start_date).toLocaleDateString("en-GB") : "-"}</small>
+      <small><strong>🎯 Due:</strong> ${project.due_date ? new Date(project.due_date).toLocaleDateString("en-GB") : "-"}</small>
+      <small style="margin-top: 8px; padding: 6px 10px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; display: inline-block; font-weight: 600;">${statusText}</small>
+      <p style="margin-top: 12px; color: #7f8c8d; font-size: 13px; line-height: 1.5;">${project.description || "No description provided"}</p>
+      <div id="tasks-${project.id}" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e8eef5; font-size: 12px;"><em>Loading tasks...</em></div>
     `;
 
-    // Buttons
     if (role !== "user") {
+      const buttonContainer = document.createElement("div");
+      buttonContainer.style.marginTop = "12px";
+      buttonContainer.style.display = "flex";
+      buttonContainer.style.gap = "8px";
+
       const editBtn = document.createElement("button");
-      editBtn.textContent = "Edit";
+      editBtn.className = "btn-edit";
+      editBtn.textContent = "✏️ Edit";
       editBtn.onclick = () => openEditModal(project);
-      cardWrapper.querySelector(".project-card").appendChild(editBtn);
 
       const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete";
+      deleteBtn.className = "btn-delete";
+      deleteBtn.textContent = "🗑️ Delete";
       deleteBtn.onclick = async () => {
         if (confirm("Are you sure you want to delete this project?")) {
           await fetch(`/api/projects/${project.id}`, { method: "DELETE" });
           loadProjects();
         }
       };
-      cardWrapper.querySelector(".project-card").appendChild(deleteBtn);
+
+      buttonContainer.appendChild(editBtn);
+      buttonContainer.appendChild(deleteBtn);
+      card.appendChild(buttonContainer);
     }
 
-    container.appendChild(cardWrapper);
-
-    // Load tasks for this project
+    container.appendChild(card);
     loadProjectTasks(project.id, project.project_name);
   }
 }
@@ -170,35 +186,36 @@ async function loadProjects() {
 async function loadProjectTasks(projectId, projectName) {
   const res = await fetch("/api/tasks");
   const tasks = await res.json();
+  console.log("Fetched all tasks for project", projectName, ":", tasks.length, "total tasks");
   const taskContainer = document.getElementById(`tasks-${projectId}`);
   taskContainer.innerHTML = "";
 
   const projectTasks = tasks.filter(t => t.project_name === projectName);
+  console.log("Filtered to", projectTasks.length, "tasks for this project");
 
   if (projectTasks.length === 0) {
-    taskContainer.innerHTML = "<em>No tasks assigned</em>";
+    taskContainer.innerHTML = "<em style='color:#95a5a6;'>No tasks assigned</em>";
     return;
   }
 
-  projectTasks.forEach(task => {
-    const taskEl = document.createElement("div");
-    taskEl.className = "task-item";
-    taskEl.innerHTML = `<strong>${task.title}</strong> - ${task.assigned_to || "-"} <em>(${task.status || "TODO"})</em>`;
-    taskContainer.appendChild(taskEl);
-  });
+  const tasksHtml = projectTasks.map(task => 
+    `<div style="padding:6px 0; border-bottom:1px solid #ecf0f1;">
+      <strong style="color:#2c3e50;">${task.title}</strong><br>
+      <small style="color:#7f8c8d;">👤 ${task.assigned_to || "-"} | ${task.status || "TODO"}</small>
+    </div>`
+  ).join("");
+  
+  taskContainer.innerHTML = tasksHtml;
 }
 
-// =========================
-// Edit Modal Logic
-// =========================
+/* Edit Modal Logic */
 function openEditModal(project) {
   document.getElementById("editProjectId").value = project.id;
   document.getElementById("editProjectName").value = project.project_name || "";
   document.getElementById("editProjectDescription").value = project.description || "";
   document.getElementById("editStartDate").value = project.start_date ? project.start_date.split("T")[0] : "";
   document.getElementById("editDueDate").value = project.due_date ? project.due_date.split("T")[0] : "";
-
-  document.getElementById("editProjectModal").style.display = "block";
+  document.getElementById("editProjectModal").style.display = "flex";
 }
 
 document.getElementById("closeModal").onclick = () => {
@@ -223,15 +240,15 @@ document.getElementById("editProjectForm").onsubmit = async (e) => {
   });
 
   if (res.ok) {
-    alert("Project updated successfully!");
     document.getElementById("editProjectModal").style.display = "none";
+    alert("Project updated successfully!");
     loadProjects();
   } else {
-    alert("Failed to update project.");
+    alert("Failed to update project");
   }
 };
 
-// Initial load
 loadProjects();
 </script>
+
 {% endblock %}

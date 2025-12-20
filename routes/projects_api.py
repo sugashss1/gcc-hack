@@ -42,7 +42,6 @@ def add_project():
 
 @projects_api.route("/api/projects", methods=["GET"])
 @login_required
-@no_user_required
 def list_projects():
     if "tenant_id" not in session:
         return {"error": "unauthorized"}, 401
@@ -72,13 +71,7 @@ def list_projects():
 
     # Employee: projects under their manager
     else:
-        manager_id = session.get("manager_id")
-        projects = (
-            db.collection("projects")
-            .where("manager_id", "==", manager_id)
-            .order_by("due_date")
-            .stream()
-        )
+        projects = {}
 
     return jsonify([
         {
