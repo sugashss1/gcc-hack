@@ -17,8 +17,11 @@ uv sync
 uv run app.py
 ```
 You will need a firestore auth json file and a llm key defined inside a .env file like
+
 GOOGLE_APPLICATION_CREDENTIALS=credentials.json
+
 GOOGLE_CLOUD_PROJECT=project_name
+
 llm_api=your_llm_key
 
 ## Tech Stack
