@@ -4,15 +4,18 @@ A role-based task and project management web application built with Flask, Googl
 The system supports CEOs, Managers, and Employees, providing Kanban task tracking, project management, and admin controls.
 
 ## This project uses uv python package manager
-`pip install uv`
+```bash
+pip install uv
+```
 this will install uv package
 
 ## instruction to run
-`git clone https://github.com/sugashss1/gcc-hack`
-`cd gcc-hack`
-`uv sync`
-`uv run app.py`
-
+```bash
+git clone https://github.com/sugashss1/gcc-hack
+cd gcc-hack
+uv sync
+uv run app.py
+```
 
 ## Tech Stack
 
