@@ -22,6 +22,21 @@ It includes **Kanban-based task tracking**, **project & goal management**, **ana
 
 ---
 
+## 👥 User Roles & Permissions
+
+### 👑 CEO
+- Organization-wide visibility  
+- Cross-project analytics & performance insights  
+
+### 🧑‍💼 Manager
+- Project & team-level task management  
+- Task assignment and progress tracking  
+
+### 👨‍💻 Employee
+- Task execution and status updates  
+- Kanban-based workflow interaction  
+
+
 ## 🛠 Tech Stack
 
 | Layer        | Technology                          |
@@ -66,19 +81,6 @@ GOOGLE_CLOUD_PROJECT=project_name
 
 llm_api=your_llm_key
 
-## 👥 User Roles & Permissions
-
-### 👑 CEO
-- Organization-wide visibility  
-- Cross-project analytics & performance insights  
-
-### 🧑‍💼 Manager
-- Project & team-level task management  
-- Task assignment and progress tracking  
-
-### 👨‍💻 Employee
-- Task execution and status updates  
-- Kanban-based workflow interaction  
 
 
 ## Tech Stack
