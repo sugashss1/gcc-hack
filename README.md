@@ -32,6 +32,6 @@ Database: Google Firestore
 
 Auth: Session-based (password hashing)
 
-Frontend: Jinja2, HTML, CSS, JavaScript, tailwind
+Frontend: Jinja2, HTML, CSS, JavaScript
 
 Charts: Chart.js
